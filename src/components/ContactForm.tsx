@@ -1,20 +1,19 @@
 import { useState, FormEvent, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
-import type { LeadSubmission } from '../types';
+import type { ContactSubmission } from '../types';
 
 export function ContactForm() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [formData, setFormData] = useState<Omit<LeadSubmission, 'id' | 'created_at' | 'updated_at'>>({
-    full_name: '',
-    business_email: '',
-    phone_number: '',
-    website_url: '',
+  const [formData, setFormData] = useState<Omit<ContactSubmission, 'id' | 'created_at'>>({
+    name: '',
+    email: '',
+    phone: '',
+    website: '',
     company_name: '',
     timeline: '',
-    message: '',
   });
 
   useEffect(() => {
@@ -40,15 +39,14 @@ export function ContactForm() {
     setSubmitStatus('idle');
 
     try {
-      const { error } = await supabase.from('lead_submissions').insert([
+      const { error } = await supabase.from('contact_submissions').insert([
         {
-          full_name: formData.full_name,
-          business_email: formData.business_email,
-          phone_number: formData.phone_number,
-          website_url: formData.website_url || null,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          website: formData.website || null,
           company_name: formData.company_name,
           timeline: formData.timeline,
-          message: formData.message || null,
         },
       ]);
 
@@ -56,13 +54,12 @@ export function ContactForm() {
 
       setSubmitStatus('success');
       setFormData({
-        full_name: '',
-        business_email: '',
-        phone_number: '',
-        website_url: '',
+        name: '',
+        email: '',
+        phone: '',
+        website: '',
         company_name: '',
         timeline: '',
-        message: '',
       });
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -72,7 +69,7 @@ export function ContactForm() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -95,28 +92,28 @@ export function ContactForm() {
         >
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label htmlFor="full_name" className="block text-gray-300 font-medium mb-2">
+              <label htmlFor="name" className="block text-gray-300 font-medium mb-2">
                 Full Name *
               </label>
               <input
                 type="text"
-                id="full_name"
-                name="full_name"
-                value={formData.full_name}
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
             </div>
             <div>
-              <label htmlFor="business_email" className="block text-gray-300 font-medium mb-2">
+              <label htmlFor="email" className="block text-gray-300 font-medium mb-2">
                 Business Email *
               </label>
               <input
                 type="email"
-                id="business_email"
-                name="business_email"
-                value={formData.business_email}
+                id="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
@@ -126,28 +123,28 @@ export function ContactForm() {
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label htmlFor="phone_number" className="block text-gray-300 font-medium mb-2">
+              <label htmlFor="phone" className="block text-gray-300 font-medium mb-2">
                 Phone Number *
               </label>
               <input
                 type="tel"
-                id="phone_number"
-                name="phone_number"
-                value={formData.phone_number}
+                id="phone"
+                name="phone"
+                value={formData.phone}
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
             </div>
             <div>
-              <label htmlFor="website_url" className="block text-gray-300 font-medium mb-2">
+              <label htmlFor="website" className="block text-gray-300 font-medium mb-2">
                 Website URL
               </label>
               <input
                 type="url"
-                id="website_url"
-                name="website_url"
-                value={formData.website_url}
+                id="website"
+                name="website"
+                value={formData.website}
                 onChange={handleChange}
                 className="w-full px-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
@@ -188,21 +185,6 @@ export function ContactForm() {
                 <option value="6-months">Within 6 Months</option>
               </select>
             </div>
-          </div>
-
-          <div className="mb-6">
-            <label htmlFor="message" className="block text-gray-300 font-medium mb-2">
-              Message
-            </label>
-            <textarea
-              id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              rows={4}
-              placeholder="Tell us about your business and goals..."
-              className="w-full px-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all resize-none"
-            />
           </div>
 
           {submitStatus === 'success' && (
