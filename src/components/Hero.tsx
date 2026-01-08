@@ -8,7 +8,12 @@ export function Hero() {
 
   return (
     <section className="min-h-screen flex items-center bg-gradient-to-br from-black to-zinc-900 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-radial from-blue-500/10 via-transparent to-transparent opacity-50"></div>
+      <div
+        className="absolute inset-0 opacity-50"
+        style={{
+          backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)'
+        }}
+      ></div>
 
       <div className="container mx-auto px-5 z-10">
         <div className="max-w-4xl opacity-0 translate-y-8 animate-[fadeInUp_1s_ease-out_0.5s_forwards]">
